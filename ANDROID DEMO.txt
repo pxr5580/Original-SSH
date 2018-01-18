@@ -1,0 +1,192 @@
+1
+
+# Accepts all licenses during upgrade.
+#rm -r -f "$ANDROID_HOME/licenses"
+#mkdir -p "$ANDROID_HOME/licenses"
+#echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "$ANDROID_HOME/licenses/android-sdk-license"
+#echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_HOME/licenses/android-sdk-preview-license"
+#echo -e "\nd975f751698a77b662f1254ddbeed3901e976f5a" > "$ANDROID_HOME/licenses/intel-android-extra-license"
+
+2
+
+# Install Required tools & images.
+echo ${ANDROID_HOME}
+
+# Accept any Android license agreements not yet agreed to
+yes | "$ANDROID_HOME/tools/bin/sdkmanager" --licenses
+
+#"$ANDROID_HOME/tools/bin/sdkmanager" --verbose --update
+
+#sonar-scanner -v
+#pwd
+#whoami
+chmod +x gradlew
+
+# Yoganandh || Adding this, since jenkins checks out on last commit in current branch, causing detached HEAD
+temp=`date '+%Y-%m-%d-%H-%M-%S'`
+git --version
+git reset --hard
+git checkout -f -b $temp
+
+if git show-ref --quiet refs/heads/${FULL_BRANCH_NAME}; then
+    git branch -D ${FULL_BRANCH_NAME}
+fi
+
+git checkout -f ${FULL_BRANCH_NAME}
+git branch -D $temp
+git reset --hard
+git status
+echo "Building ${FAST_LANE_ACTION} on ${FULL_BRANCH_NAME}"
+# 
+
+# "$ANDROID_HOME/tools/bin/sdkmanager" --verbose --list
+# "$ANDROID_HOME/tools/bin/sdkmanager" --verbose "platforms;android-25" "build-tools;25.0.3" "system-images;android-25;google_apis;arm64-v8a" "system-images;android-25;google_apis;armeabi-v7a" "system-images;android-25;google_apis;x86" "system-images;android-25;google_apis;x86_64"
+# "$ANDROID_HOME/tools/bin/sdkmanager" --verbose --update
+# gem install fastlane -NV
+
+
+# Force create AVD
+# "$ANDROID_HOME/tools/bin/avdmanager" list avd
+# echo no | "$ANDROID_HOME/tools/bin/avdmanager" --verbose create avd -n android_25_google_apis_x86_1GB -c 1024M -k 'system-images;android-25;google_apis;x86' -f -g "google_apis"
+
+## Commented by rsingh136 ##
+#echo 'n' | $ANDROID_HOME/tools/bin/avdmanager create avd -n android-v7a --force -c 2048M -k 'system-images;android-25;google_apis;x86_64'
+## --- ##
+
+
+
+3
+
+
+"$ANDROID_HOME/tools/bin/avdmanager" list avd
+"$ANDROID_HOME/platform-tools/adb" devices
+
+
+
+# "$ANDROID_HOME/tools/bin/avdmanager" delete avd -n android-25
+# "$ANDROID_HOME/tools/bin/avdmanager" delete avd -n Android-v7a
+# "$ANDROID_HOME/tools/bin/avdmanager" delete avd -n weitest
+
+#"$ANDROID_HOME/platform-tools/adb" devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done
+
+
+# "$ANDROID_HOME/tools/bin/avdmanager" android delete avd -n weitest
+
+# "$ANDROID_HOME/tools/emulator" -ports 5556,5559 -prop persist.sys.language=en -prop persist.sys.country=US -avd android_25_google_apis_x86_1GB -no-snapshot-load -no-snapshot-save -no-window -no-skin -no-audio -force-32bit
+
+
+# "$ANDROID_HOME/tools/emulator" -list-avds
+# "$ANDROID_HOME/platform-tools/adb" devices
+#"$ANDROID_HOME/tools/emulator" -ports 5977,5978 -prop persist.sys.language=en -prop persist.sys.country=US -avd hudson_en-US_240_WVGA_android-22_armeabi-v7a_mySuffix -no-snapshot-load -no-snapshot-save -no-window -force-32bit
+
+## Commented by rsingh136 ##
+#"$ANDROID_HOME/tools/emulator" -ports 5555,5557 -prop persist.sys.language=en -prop persist.sys.country=US -avd android-v7a -no-snapshot-load -no-snapshot-save -no-window
+## -- ##
+
+# echo y | "$ANDROID_HOME/tools/android" update sdk --no-ui --all --filter "sys-img-x86_64-google_apis-25"
+# echo y | "$ANDROID_HOME/tools/android" update sdk --no-ui --all --filter "sys-img-x86-google_apis-25"
+# echo y | "$ANDROID_HOME/tools/android" update sdk --no-ui --all --filter "sys-img-armeabi-v7a-google_apis-25"
+#ps auxwww | grep adb
+
+#SHELL=/bin/bash $ANDROID_HOME/tools/emulator -avd Android-v7a -no-window -no-boot-anim -netfast -version -screen no-touch -no-audio -verbose
+
+# SHELL=/bin/bash $ANDROID_HOME/tools/emulator -avd Android-v7a -no-window -verbose -no-boot-anim
+
+## Commented by rsingh136 ##
+#"$ANDROID_HOME/platform-tools/adb" devices
+## -- ##
+
+
+
+4
+
+
+#which emulator
+#uname -a
+#uname -r
+
+#$ANDROID_HOME/tools/bin/sdkmanager --update
+#$ANDROID_HOME/tools/bin/sdkmanager --list --verbose 
+
+#ls -l /opt/android-sdk-linux/tools
+#ls -l /opt/android-sdk-linux
+#ls -l /opt/android-sdk-linux/emulator
+#ls -l /opt/android-sdk-linux/emulator/qemu
+#ls -l /opt/android-sdk-linux/emulator/qemu/linux-x86_64
+
+#ldd /opt/android-sdk-linux/emulator/qemu/linux-x86_64/qemu-system-x86_64
+#ldd /opt/android-sdk-linux/emulator/qemu/linux-x86_64/qemu-upstream-x86_64
+
+#ls -l /usr/lib
+
+#grep -E '(vmx|svm)' /proc/cpuinfo
+#SHELL=/bin/bash $ANDROID_HOME/tools/bin/sdkmanager --verbose "system-images;android-25;google_apis;x86"
+#echo 'n' | $ANDROID_HOME/tools/bin/avdmanager create avd -n Android8 --force -c 2048M -k 'system-images;android-25;google_apis;x86'
+#SHELL=/bin/bash $ANDROID_HOME/emulator/emulator  @Android8 -no-window -no-audio
+
+#SHELL=/bin/bash $ANDROID_HOME/tools/bin/sdkmanager --verbose "system-images;android-25;google_apis;x86"
+#echo 'n' | $ANDROID_HOME/tools/bin/avdmanager create avd -n Android8321 --force -c 2048M -k 'system-images;android-25;google_apis;x86'
+
+
+#SHELL=/bin/bash $ANDROID_HOME/tools/emulator -use-system-libs @Android864 -no-window -no-skin
+
+#SHELL=/bin/bash $ANDROID_HOME/tools/bin/sdkmanager --verbose "system-images;android-25;google_apis;armeabi-v7a"
+#echo 'n' | $ANDROID_HOME/tools/bin/avdmanager create avd --force --name AndroidArm --package "system-images;android-25;google_apis;armeabi-v7a"
+#SHELL=/bin/bash $ANDROID_HOME/tools/emulator -use-system-libs @AndroidArm -no-window
+
+
+#echo 'n' | $ANDROID_HOME/tools/bin/avdmanager create avd -n Android2.x --force -c 2048M -k 'system-images;android-25;google_apis;armeabi-v7a'
+
+# --------------------------------------
+# $ANDROID_HOME/platform-tools/adb kill-server
+
+# SHELL=/bin/bash $ANDROID_HOME/tools/emulator -avd Android2.x -no-window -verbose -gpu off &
+# EPID=$!
+
+# echo "Emulator Process id is:${EPID}"
+
+# sleep 180
+
+#$ANDROID_HOME/platform-tools/adb logcat -c
+#$ANDROID_HOME/platform-tools/adb logcat > logcat.log &
+#LCAT_PID=$!
+
+# $ANDROID_HOME/platform-tools/adb devices
+
+
+
+5
+
+
+# cat /usr/local/conf/sonar-scanner.properties
+
+# cat /var/jenkins_home/jobs/sdk-android-NIGHTLY/workspace/sonar-project.properties
+
+
+
+6
+
+
+# Install any missing required gems
+bundle install
+
+#/usr/local/bin/sonar-scanner --version
+#cat /usr/local/Cellar/sonar-scanner/2.8/libexec/conf/sonar-scanner.properties
+echo Triggering build FOR fastlane ${FAST_LANE_ACTION}
+
+#~/.fastlane/bin/fastlane update_fastlane
+# sudo gem install fastlane
+# Wei - export sonar-scanner environment path
+export PATH="/usr/local/bin:$PATH"
+
+# Run fastlane using bundle to make sure dependent gems are available
+bundle exec fastlane ${FAST_LANE_ACTION}
+
+
+
+
+
+
+
+
+
