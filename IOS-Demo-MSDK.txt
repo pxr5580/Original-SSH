@@ -1,0 +1,95 @@
+ARTIFACTORY_USERNAME=artifactory.msdk
+ARTIFACTORY_PASSWORD=AP4fkXjFAaMm35znVVjz3EKnZdD54JUmbb8E2rq9fT4JSLsrVC46WowWZxab
+ARTIFACTORY_URL=http://10.1.14.191:8081/artifactory/
+BRANCH_NAME=${FULL_BRANCH_NAME}
+UPDATE_VERSION=${UPDATE_VERSION_NUMBER}
+
+
+
+
+
+# unlock keychain
+security unlock-keychain -p $JENKINSPASS "/Users/jenkins/Library/Keychains/login.keychain"
+
+# Build with Xcode 9 (requires root/sudo)
+sudo xcode-select -s "/Applications/$XCODE/Contents/Developer"
+
+# Check version of Xcode that will be used
+ls -1d /Applications/Xcode*
+xcode-select -p
+xcodebuild -version
+
+# List iOS devices available to Xcode build tools
+instruments -s devices
+
+
+
+
+
+
+
+
+#Simulator reboot
+xcrun instruments -w 'iPhone 6s (10.2)' || true
+
+
+#To open the simulator
+sleep 90
+
+
+
+
+
+
+
+#Install any missing required gems
+bundle install
+
+# Temporarily switch lanes to get more details about test failures
+#bundle exec fastlane build_test_sdk
+# the correct lanes to run for distribution are below
+
+# This runs the lane specified in fastlane/Fastlane file
+# For any information contact rsenthilnathan@sapient.com
+bundle exec fastlane development
+
+# Start preparing demo app once distribution is complete
+bundle exec fastlane prepare_demo_app
+
+
+
+
+
+
+
+
+
+
+
+EXPORT_PLIST="$(pwd)/ExportArchiveEnterprise.plist"
+BUILD_DIR="$(pwd)/export"
+
+# unlock keychain
+security unlock-keychain -p $JENKINSPASS "/Users/jenkins/Library/Keychains/login.keychain"
+
+# clean export directory
+rm -rf ./export
+mkdir ./export
+
+# clean + build
+xcodebuild clean -workspace McDonaldsSDK.xcworkspace -scheme "McDonaldsSDKDemo" 
+#Temporary workaround for bundle duplication and corrupt build issue (removed PRODUCT_BUNDLE_IDENTIFIER argument)
+#xcodebuild archive -workspace McDonaldsSDK.xcworkspace -scheme "McDonaldsSDKDemo" -archivePath "./export/McDonaldsSDKDemo" PRODUCT_BUNDLE_IDENTIFIER="com.mcdonalds.gma.sdkdemo" DEVELOPMENT_TEAM="C66F398TN2" CODE_SIGN_IDENTITY="iPhone Developer"
+xcodebuild archive -workspace McDonaldsSDK.xcworkspace -scheme "McDonaldsSDKDemo" -archivePath "./export/McDonaldsSDKDemo"  DEVELOPMENT_TEAM="C66F398TN2" CODE_SIGN_IDENTITY="iPhone Developer"
+
+# create IPA
+env DEVELOPER_DIR="/Applications/$XCODE" /usr/bin/xcodebuild -exportArchive -exportOptionsPlist "ExportArchiveEnterprise.plist" -archivePath "./export/McDonaldsSDKDemo.xcarchive" -exportPath "./export/McDonaldsSDKDemo" -allowProvisioningUpdates
+mv "./export/McDonaldsSDKDemo/McDonaldsSDKDemo.ipa" ./export/McDonaldsSDKDemo.ipa
+
+#xcodebuild -exportArchive -archivePath './export/McDonaldsSDKDemo.xcarchive' -exportPath './export/McDonaldsSDKDemo' -exportFormat ipa -exportProvisioningProfile 'GMASDKDistributionDemo'
+#xcodebuild \
+#-exportArchive \
+#-exportOptionsPlist "${EXPORT_PLIST}" \
+#-archivePath "${BUILD_DIR}/McDonaldsSDKDemo.xcarchive" \
+#-exportPath "${BUILD_DIR}/McDonaldsSDKDemo"
+#-allowProvisioningUpdates
